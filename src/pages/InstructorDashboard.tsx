@@ -5,7 +5,7 @@ import KnowledgeMap from "@/components/KnowledgeMap";
 import AssessmentCard from "@/components/AssessmentCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart, AreaChart, Doughnut } from "@/components/ui/chart";
+import { BarChart, AreaChart, Doughnut } from "@/components/ui/charts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
