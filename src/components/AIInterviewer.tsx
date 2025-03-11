@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +13,8 @@ interface Message {
 
 interface AIInterviewerProps {
   className?: string;
-  topic: string;
+  topic?: string;
+  subject?: string;
   onResponseEvaluated?: (evaluation: {
     score: number;
     feedback: string;
@@ -25,6 +25,7 @@ interface AIInterviewerProps {
 const AIInterviewer: React.FC<AIInterviewerProps> = ({
   className,
   topic,
+  subject,
   onResponseEvaluated
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -33,19 +34,20 @@ const AIInterviewer: React.FC<AIInterviewerProps> = ({
   const [isThinking, setIsThinking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Simulate initial AI message when component mounts
+  const assessmentTopic = topic || subject;
+
   useEffect(() => {
     const timer = setTimeout(() => {
       const initialMessage: Message = {
         role: 'ai',
-        content: `Hello! I'm your AI interviewer for today's assessment on ${topic}. Let's start with a simple question: Could you explain what ${topic} means to you?`,
+        content: `Hello! I'm your AI interviewer for today's assessment on ${assessmentTopic}. Let's start with a simple question: Could you explain what ${assessmentTopic} means to you?`,
         timestamp: new Date()
       };
       setMessages([initialMessage]);
     }, 1000);
     
     return () => clearTimeout(timer);
-  }, [topic]);
+  }, [assessmentTopic]);
 
   useEffect(() => {
     scrollToBottom();
@@ -58,7 +60,6 @@ const AIInterviewer: React.FC<AIInterviewerProps> = ({
   const handleSendMessage = () => {
     if (inputValue.trim() === '') return;
     
-    // Add user message
     const userMessage: Message = {
       role: 'user',
       content: inputValue,
@@ -69,22 +70,17 @@ const AIInterviewer: React.FC<AIInterviewerProps> = ({
     setInputValue('');
     setIsThinking(true);
     
-    // Simulate AI thinking and response
     setTimeout(() => {
-      // This is where you would normally make an API call to your LLM
       simulateAIResponse(userMessage.content);
     }, 2000);
   };
 
   const simulateAIResponse = (userMessage: string) => {
-    // For demo purposes, we're simulating AI responses
-    // In a real implementation, this would call your LLM API
-    
     const responses = [
-      `That's an interesting perspective on ${topic}. Could you elaborate on how it connects to real-world applications?`,
-      `Great explanation! Now, let's dig deeper. What do you think are the key challenges in understanding ${topic}?`,
-      `I see your point. Let's explore a related concept: how does ${topic} relate to other areas you've studied?`,
-      `That makes sense. Let's test your knowledge with a more advanced question: What are the theoretical foundations of ${topic}?`
+      `That's an interesting perspective on ${assessmentTopic}. Could you elaborate on how it connects to real-world applications?`,
+      `Great explanation! Now, let's dig deeper. What do you think are the key challenges in understanding ${assessmentTopic}?`,
+      `I see your point. Let's explore a related concept: how does ${assessmentTopic} relate to other areas you've studied?`,
+      `That makes sense. Let's test your knowledge with a more advanced question: What are the theoretical foundations of ${assessmentTopic}?`
     ];
     
     const randomResponse = responses[Math.floor(Math.random() * responses.length)];
@@ -98,36 +94,31 @@ const AIInterviewer: React.FC<AIInterviewerProps> = ({
     setMessages(prev => [...prev, aiMessage]);
     setIsThinking(false);
     
-    // Simulate evaluation for demo purposes
     if (onResponseEvaluated) {
       onResponseEvaluated({
         score: Math.floor(Math.random() * 100),
-        feedback: `Your explanation of ${topic} shows good understanding, though there are some areas that could be expanded.`,
-        concepts: [`${topic} fundamentals`, 'theoretical frameworks', 'practical applications']
+        feedback: `Your explanation of ${assessmentTopic} shows good understanding, though there are some areas that could be expanded.`,
+        concepts: [`${assessmentTopic} fundamentals`, 'theoretical frameworks', 'practical applications']
       });
     }
   };
 
   const toggleRecording = () => {
-    // In a real implementation, this would handle voice recording
     setIsRecording(!isRecording);
     
     if (isRecording) {
-      // Simulate stopping recording and getting text
       setTimeout(() => {
-        setInputValue(`This is a simulated voice response about ${topic}.`);
+        setInputValue(`This is a simulated voice response about ${assessmentTopic}.`);
       }, 500);
     }
   };
 
   return (
     <div className={cn("flex flex-col h-[600px] rounded-xl shadow-md border border-gray-200 bg-white", className)}>
-      {/* Interview header */}
       <div className="p-4 border-b border-gray-200 bg-alterview-gradient rounded-t-xl">
-        <h2 className="text-white font-semibold text-lg">Interview Assessment: {topic}</h2>
+        <h2 className="text-white font-semibold text-lg">Interview Assessment: {assessmentTopic}</h2>
       </div>
       
-      {/* Messages area */}
       <div className="flex-grow overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => (
           <div key={index} className={cn(
@@ -178,7 +169,6 @@ const AIInterviewer: React.FC<AIInterviewerProps> = ({
         <div ref={messagesEndRef} />
       </div>
       
-      {/* Input area */}
       <div className="p-4 border-t border-gray-200">
         <div className="flex items-end space-x-2">
           <Textarea
